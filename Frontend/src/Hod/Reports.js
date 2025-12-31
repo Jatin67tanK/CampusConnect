@@ -1,0 +1,247 @@
+import { useState, useMemo } from "react";
+import { Search, CheckCircle, XCircle, Building2 } from "lucide-react";
+
+export default function Reports({ open = true }) {
+  const [activeTab, setActiveTab] = useState("fee");
+
+  const sidebarWidth = open ? "ml-64" : "ml-20";
+
+  return (
+    <>
+      {/* ================= HEADER ================= */}
+      <header
+        className={`
+          fixed top-0 h-16 z-30 bg-white border-b
+          transition-all duration-300
+          ${open ? " w-[calc(100%)]" : " w-[calc(100%)]"}
+        `}
+      >
+
+        <div className="h-full flex items-center px-6">
+          <h1 className="flex items-center gap-2 font-semibold text-gray-800">
+            <Building2 className="w-6 h-6 text-violet-600" />
+            Reports
+          </h1>
+
+          
+        </div>
+      </header>
+
+      {/* ================= MAIN ================= */}
+      <main
+        className={`pt-20 px-6 min-h-screen bg-gray-50
+        transition-all duration-300
+        ${sidebarWidth}`}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Title */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Institution Reports
+            </h2>
+            <p className="text-sm text-gray-500">
+              Institution-level overview (read-only)
+            </p>
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-xl border shadow-sm">
+            {/* Tabs */}
+            <div className="border-b flex gap-6 px-6 pt-4">
+              <TabButton
+                label="Fee Payment Report"
+                active={activeTab === "fee"}
+                onClick={() => setActiveTab("fee")}
+              />
+              <TabButton
+                label="Result Report"
+                active={activeTab === "result"}
+                onClick={() => setActiveTab("result")}
+              />
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {activeTab === "fee" ? <FeeReport /> : <ResultReport />}
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
+/* ================= TAB BUTTON ================= */
+
+function TabButton({ label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`pb-3 text-sm font-semibold transition
+        ${active
+          ? "text-blue-600 border-b-2 border-blue-600"
+          : "text-gray-500 hover:text-gray-700"
+        }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+/* ================= FEE REPORT ================= */
+
+function FeeReport() {
+  const data = [
+    {
+      roll: "2024-CS-001",
+      name: "Aditya Sharma",
+      amount: "₹12,500",
+      status: "Paid",
+      receipt: "REC-8921",
+    },
+    {
+      roll: "2024-CS-002",
+      name: "Priya Patel",
+      amount: "₹12,500",
+      status: "Unpaid",
+      receipt: "-",
+    },
+    {
+      roll: "2024-CS-003",
+      name: "Rohan Mehta",
+      amount: "₹12,500",
+      status: "Paid",
+      receipt: "REC-8923",
+    },
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[700px] text-sm">
+        <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+          <tr>
+            <th className="p-4 text-left">Roll No</th>
+            <th className="p-4 text-left">Student</th>
+            <th className="p-4 text-left">Amount</th>
+            <th className="p-4 text-left">Status</th>
+            <th className="p-4 text-left">Receipt</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {data.map((row, i) => (
+            <tr key={i}>
+              <td className="p-4 font-medium">{row.roll}</td>
+              <td className="p-4">{row.name}</td>
+              <td className="p-4 font-semibold">{row.amount}</td>
+              <td className="p-4">
+                {row.status === "Paid" ? (
+                  <Badge color="green" icon={CheckCircle} label="Paid" />
+                ) : (
+                  <Badge color="red" icon={XCircle} label="Unpaid" />
+                )}
+              </td>
+              <td className="p-4 text-gray-500">{row.receipt}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ================= RESULT REPORT ================= */
+
+function ResultReport() {
+  const [search, setSearch] = useState("");
+
+  const data = [
+    {
+      roll: "2023-CS-001",
+      name: "Aarav Sharma",
+      course: "B.Tech (CSE)",
+      semester: "Sem 5",
+      status: "Entered",
+    },
+    {
+      roll: "2023-CS-002",
+      name: "Priya Patel",
+      course: "B.Tech (CSE)",
+      semester: "Sem 5",
+      status: "Not Entered",
+    },
+  ];
+
+  const filteredData = useMemo(() => {
+    return data.filter(
+      (row) =>
+        row.roll.toLowerCase().includes(search.toLowerCase()) ||
+        row.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  return (
+    <>
+      <div className="relative w-80 mb-4">
+        <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by roll or name"
+          className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px] text-sm">
+          <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+            <tr>
+              <th className="p-4 text-left">Roll No</th>
+              <th className="p-4 text-left">Student</th>
+              <th className="p-4 text-left">Course</th>
+              <th className="p-4 text-left">Semester</th>
+              <th className="p-4 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {filteredData.map((row, i) => (
+              <tr key={i}>
+                <td className="p-4 font-medium">{row.roll}</td>
+                <td className="p-4">{row.name}</td>
+                <td className="p-4">{row.course}</td>
+                <td className="p-4">{row.semester}</td>
+                <td className="p-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs ${row.status === "Entered"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
+                      }`}
+                  >
+                    {row.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+/* ================= BADGE ================= */
+
+function Badge({ color, icon: Icon, label }) {
+  const colors = {
+    green: "bg-green-100 text-green-700",
+    red: "bg-red-100 text-red-700",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs ${colors[color]}`}
+    >
+      <Icon size={14} />
+      {label}
+    </span>
+  );
+}
