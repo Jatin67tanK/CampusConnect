@@ -252,6 +252,7 @@ export default function Dashboard() {
           color="indigo"
           icon={Shield}
         />
+        
         <StatCard
           title="FEES PAID COUNT"
           value={stats.feeStatusCounts?.PAID || 0}
